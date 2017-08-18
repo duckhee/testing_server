@@ -1,0 +1,25 @@
+
+
+var debug = require('debug')('server');
+
+var os = require('os');
+
+var app = require('../server.js');
+
+app.set('port', process.env.PORT || 8080);
+
+var server = app.listen(app.get('port'), function() {
+    console.log('server on');
+
+    var interface_net = os.networkInterfaces();
+    var addresses = [];
+    for (var k in interface_net) {
+        for (var k2 in interface_net[k]) {
+            var address = interface_net[k][k2];
+            if (address.family === 'IPv4' && !address.internal) {
+                addresses.push(address.address);
+            }
+        }
+    }
+    console.log(addresses + ':' + app.get('port'));
+});
