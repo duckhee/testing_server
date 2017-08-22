@@ -543,180 +543,115 @@
     <% include ../partials/footer_graph_javascript.ejs %>
 
         <script>
-            $(function() {
-                /*
-                 * LINE CHART
-                 * ----------
-                 */
-                //LINE randomly generated data
-                //여기에 날짜와 데이터 값이 들어가야한다.  여기서 i가 데이터 숫자 Math.sin(i)가 i의 데이터 값 그려질 값이 된다.
-                if (<%-JSON.stringify(data)%>) {
-                    var get_data = <%-JSON.stringify(data)%>;
+            var get_Data = function() {
 
-                    var show_data = [];
-                    for (var i = 0; i < get_data.length; i++) {
-                        show_data.push([i, get_data[i].value1]);
-                        console.log(get_data[i].value1);
-                    }
+                $.ajax({
 
-                    var line_data1 = {
-                        data: show_data,
-                        color: "#3c8dbc",
-                    }
-                } else {
+                    type: "GET",
+                    url: "http://192.168.0.7:8080/testing/ajax/get/data/testing",
+                    dataType: "json",
+                    error: function() {
 
-                    var sin = [];
-
-                    var line_data1 = {
-                        data: sin,
-                        color: "#3c8dbc"
-                    };
-                }
-
-                $.plot("#sensor-chart", [line_data1], {
-                    grid: {
-                        hoverable: true,
-                        borderColor: "#f3f3f3",
-                        borderWidth: 1,
-                        tickColor: "#f3f3f3"
+                        ajax_data = null;
                     },
-                    series: {
-                        shadowSize: 0,
-                        lines: {
-                            show: true
-                        },
-                        points: {
-                            show: true
+                    success: function(data) {
+                        //  ajax_data = JSON.stringify(data);
+                        var ajax_data;
+                        ajax_data = data;
+
+                        var get_data = ajax_data;
+
+                        var show_data = [];
+                        for (var i = 0, max_data = get_data.length; i < max_data; i++) {
+                            show_data.push([i, get_data[i].value1]);
+                            console.log(get_data[i].value1);
                         }
-                    },
-                    lines: {
-                        fill: false,
-                        color: ["#3c8dbc", "#f56954"],
-                    },
-                    yaxis: {
-                        show: true,
-                    },
-                    xaxis: {
-                        // 이 설정은 x축의 보여지는 것이 날짜 기준으로 하기 위해서 있는 것이다.
-                        /*
-                        mode: "time",
-                        min: (new Date("2017/08/08")).getTime(),
-                        max: (new Date("2017/08/18")).getTime(),
-                        // min: (new Date("2010/11/01")).getTime(),
-                        // max: (new Date("2011/02/01")).getTime(),
-                    */
-                        show: true,
-                    }
-                });
-                //Initialize tooltip on hover
-                $('<div class="tooltip-inner" id="sensor-chart-tooltip"></div>').css({
-                    position: "absolute",
-                    display: "none",
-                    opacity: 0.8
-                }).appendTo("body");
-                $("#sensor-chart").bind("plothover", function(event, pos, item) {
 
-                    if (item) {
-                        var x = item.datapoint[0].toFixed(2),
-                            y = item.datapoint[1].toFixed(2);
-
-                        $("#sensor-chart-tooltip").html(item.series.label + " of " + x + " = " + y)
-                            .css({
-                                top: item.pageY + 5,
-                                left: item.pageX + 5
-                            })
-                            .fadeIn(200);
-                    } else {
-                        $("#sensor-chart-tooltip").hide();
-                    }
-
-                });
-                /* END LINE CHART */
-                /*
-                 * LINE CHART
-                 * ----------
-                 */
-                //LINE randomly generated data
-                /*
-                                var sin = [],
-                                    cos = [];
-                                for (var i = 0; i < 14; i += 0.5) {
-                                    sin.push([i, Math.sin(i)]);
-                                    cos.push([i, Math.cos(i)]);
+                        var line_data1 = {
+                            data: show_data,
+                            color: "#3c8dbc",
+                        };
+                        $.plot("#sensor-chart", [line_data1], {
+                            grid: {
+                                hoverable: true,
+                                borderColor: "#f3f3f3",
+                                borderWidth: 1,
+                                tickColor: "#f3f3f3"
+                            },
+                            series: {
+                                shadowSize: 0,
+                                lines: {
+                                    show: true
+                                },
+                                points: {
+                                    show: true
                                 }
-                                var line_data1 = {
-                                    data: sin,
-                                    color: "#3c8dbc"
-                                };
-                                var line_data2 = {
-                                    data: cos,
-                                    color: "#00c0ef"
-                                };
-                                $.plot("#line-chart", [line_data1, line_data2], {
-                                    grid: {
-                                        hoverable: true,
-                                        borderColor: "#f3f3f3",
-                                        borderWidth: 1,
-                                        tickColor: "#f3f3f3"
-                                    },
-                                    series: {
-                                        shadowSize: 0,
-                                        lines: {
-                                            show: true
-                                        },
-                                        points: {
-                                            show: true
-                                        }
-                                    },
-                                    lines: {
-                                        fill: false,
-                                        color: ["#3c8dbc", "#f56954"]
-                                    },
-                                    yaxis: {
-                                        show: true,
-                                    },
-                                    xaxis: {
-                                        show: true
-                                    }
-                                });
-                                //Initialize tooltip on hover
-                                $('<div class="tooltip-inner" id="line-chart-tooltip"></div>').css({
-                                    position: "absolute",
-                                    display: "none",
-                                    opacity: 0.8
-                                }).appendTo("body");
-                                $("#line-chart").bind("plothover", function(event, pos, item) {
+                            },
+                            lines: {
+                                fill: false,
+                                color: ["#3c8dbc", "#f56954"],
+                            },
+                            yaxis: {
+                                show: true,
+                            },
+                            xaxis: {
+                                show: true,
+                            }
+                        });
+                        //Initialize tooltip on hover
+                        $('<div class="tooltip-inner" id="sensor-chart-tooltip"></div>').css({
+                            position: "absolute",
+                            display: "none",
+                            opacity: 0.8
+                        }).appendTo("body");
+                        $("#sensor-chart").bind("plothover", function(event, pos, item) {
 
-                                    if (item) {
-                                        var x = item.datapoint[0].toFixed(2),
-                                            y = item.datapoint[1].toFixed(2);
+                            if (item) {
+                                var x = item.datapoint[0].toFixed(2),
+                                    y = item.datapoint[1].toFixed(2);
 
-                                        $("#line-chart-tooltip").html(item.series.label + " of " + x + " = " + y)
-                                            .css({
-                                                top: item.pageY + 5,
-                                                left: item.pageX + 5
-                                            })
-                                            .fadeIn(200);
-                                    } else {
-                                        $("#line-chart-tooltip").hide();
-                                    }
+                                $("#sensor-chart-tooltip").html(item.series.label + " of " + x + " = " + y)
+                                    .css({
+                                        top: item.pageY + 5,
+                                        left: item.pageX + 5
+                                    })
+                                    .fadeIn(200);
+                            } else {
+                                $("#sensor-chart-tooltip").hide();
+                            }
 
-                                });
-                                 */
-                /* END LINE CHART */
+                        });
+                    }
 
+                });
+
+
+            };
+            $(document).ready(function() {
+                $(function() {
+                    /*
+                     * LINE CHART
+                     * ----------
+                     */
+                    //LINE randomly generated data
+                    //여기에 날짜와 데이터 값이 들어가야한다.  여기서 i가 데이터 숫자 Math.sin(i)가 i의 데이터 값 그려질 값이 된다.
+
+                    get_Data();
+                    setInterval("get_Data()", 1000);
+
+                });
+
+                /*
+                 * Custom Label formatter
+                 * ----------------------
+                 */
+                function labelFormatter(label, series) {
+                    return '<div style="font-size:13px; text-align:center; padding:2px; color: #fff; font-weight: 600;">' +
+                        label +
+                        "<br>" +
+                        Math.round(series.percent) + "%</div>";
+                }
             });
-
-            /*
-             * Custom Label formatter
-             * ----------------------
-             */
-            function labelFormatter(label, series) {
-                return '<div style="font-size:13px; text-align:center; padding:2px; color: #fff; font-weight: 600;">' +
-                    label +
-                    "<br>" +
-                    Math.round(series.percent) + "%</div>";
-            }
         </script>
 
 </body>
