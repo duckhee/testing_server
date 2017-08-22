@@ -23,7 +23,15 @@ router.get('/test', function(req, res, next) {
     next();
 });
 router.get('/test', function(req, res) {
-    res.render('./pages/testing_index');
+    var channel = req.query.channel;
+    console.log('query : ');
+    console.log(channel);
+    var channel_info = req.params.channel || req.body.channel;
+    if (channel) {
+        res.render('pages/test_index');
+    } else {
+        res.render('./pages/index');
+    }
 });
 
 
@@ -38,6 +46,35 @@ router.get('/testing/data', function(req, res) {
 
 
 
+});
+router.get('/testing/insert/data/:channel/:value', function(req, res, next) {
+    console.log('get insert pages');
+    next();
+});
+
+router.get('/testing/insert/data/:channel/:value', function(req, res) {
+
+    var insert_info = [];
+
+    var channel = req.params.channel || req.body.channel;
+    var values = req.params.value || req.body.value;
+    console.log(channel);
+    console.log(values);
+    console.log(typeof(values));
+    insert_info.push(channel);
+    insert_info.push(values);
+    dbvalue.insert_data(insert_info, function(err, row) {
+        if (err) {
+            console.log(err);
+            console.log(err.stack);
+            res.json('failed');
+        } else if (row) {
+            console.log('success');
+            res.json(row);
+        } else {
+            res.json('testing');
+        }
+    });
 });
 
 router.post('/testing/insert/data/:channel/:value', function(req, res, next) {
@@ -85,8 +122,9 @@ router.get('/testing/get/data/:channel', function(req, res) {
     dbvalue.show_data(channel_info, function(err, row) {
         if (err) {
             console.log(err.stack);
-            res.json('failed');
+            res.json(err.stack);
         } else if (row) {
+
             console.log(row);
             //res.json(row);
             get_data = row;
@@ -102,13 +140,61 @@ router.get('/testing/get/data/:channel', function(req, res) {
             console.log(parse_data);
             console.log('value idx : ');
             console.log(parse_data.value1);
+            //res.json(get_data);
             res.render('./pages/testing_index', {
                 data: get_data
             });
             //data: JSON.stringify(get_data)
         } else {
             console.log('testing');
-            res.json('testing');
+            console.log('testsets');
+            res.render('./pages/testing_index', {
+                data: null
+            });
+        }
+    });
+
+});
+
+
+router.get('/testing/ajax/get/data/:channel', function(req, res) {
+    var channel_info = [];
+    var channel = req.params.channel || req.body.channel;
+    channel_info.push(channel);
+    var get_data;
+    dbvalue.show_data(channel_info, function(err, row) {
+        if (err) {
+            console.log(err.stack);
+            res.json(err.stack);
+        } else if (row) {
+
+            console.log(row);
+            //res.json(row);
+            get_data = row;
+            console.log('value ');
+            console.log(get_data);
+            console.log('type');
+            console.log(typeof(get_data));
+            console.log('length');
+            console.log(get_data.length);
+            console.log('json parse');
+            var parse_data;
+            parse_data = get_data[1];
+            console.log(parse_data);
+            console.log('value idx : ');
+            console.log(parse_data.value1);
+            res.json(get_data);
+            // res.render('./pages/testing_index', {
+            //    data: get_data
+            // });
+            //data: JSON.stringify(get_data)
+        } else {
+            console.log('testing');
+            console.log('testsets');
+            // res.render('./pages/testing_index', {
+            //    data: null
+            // });
+            res.json('failed');
         }
     });
 
